@@ -11,7 +11,8 @@ import cartRouter from './Routes/cart.route.js'
 import addressRouter from './Routes/address.route.js'
 import orderRouter from './Routes/order.route.js'
 import { stripeWebHooks } from './Controller/orderController.js'
-
+const app=express()
+app.use(express.json())
 const allowedOrigins=["http://localhost:5173"]
 const port=process.env.PORT || 4000
 
@@ -21,11 +22,11 @@ await connectCloudinary()
 
 app.post('/stripe',express.raw({type:'application/json'}),stripeWebHooks)
 
-const app=express()
+
 
 // Middlewares 
 
-app.use(express.json())
+
 
 app.use(cookieParser())
 
