@@ -123,10 +123,12 @@ export const stripeWebHooks=async(request,response)=>{
         let event;
 
         try {
-            event=stripeInstance.webhooks.constructEvent()
-            request.body,
-            sig,
-            process.env.STRIPE_WEBHOOK_SECRET
+           event = stripeInstance.webhooks.constructEvent(
+  request.body,
+  sig,
+  process.env.STRIPE_WEBHOOK_SECRET
+);
+
         } catch (error) {
             response.status(400).send(`webhook error ${error.message}`)
         }
@@ -138,7 +140,7 @@ export const stripeWebHooks=async(request,response)=>{
 
                 const session=await stripeInstance.checkout.sessions.list({payment_intent:paymentIntentId})
 
-                const {orderId,userId}=session.date[0].metadata 
+                const {orderId,userId}=session.data[0].metadata 
                 await Order.findByIdAndUpdate(orderId,{isPaid:true})
                 await User.findByIdAndUpdate(userId,{cartItems:{}})
                   break
@@ -149,7 +151,7 @@ export const stripeWebHooks=async(request,response)=>{
 
                 const session=await stripeInstance.checkout.sessions.list({payment_intent:paymentIntentId})
 
-                const {orderId}=session.date[0].metadata 
+                const {orderId}=session.data[0].metadata 
                 await Order.findByIdAndDelete(orderId)
                 break
              }
