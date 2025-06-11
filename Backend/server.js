@@ -13,7 +13,7 @@ import orderRouter from './Routes/order.route.js'
 import { stripeWebHooks } from './Controller/orderController.js'
 const app=express()
 app.use(express.json())
-const allowedOrigins=["https://grocery-website-frontend.onrender.com"]
+const allowedOrigins=["http://localhost:5173","https://grocery-website-frontend.onrender.com"]
 const port=process.env.PORT || 4000
 
 await connectDB()

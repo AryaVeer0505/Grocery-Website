@@ -43,50 +43,47 @@ const Cart = () => {
              }
     },[products,cartItems])
 
-    const placeOrder=async()=>{
-          try {
-            if(!selectedAddress){
-                return toast.error("Please select an address")
-            }
-            if(paymentOption==="COD"){
-                  const {data}=await axios.post('/api/order/cod',{
-                    userId:user._id,
-                    items:cartArray.map(item=>({
-                        product:item._id,
-                        quantity:item.quantity
-                    })),
-                    address:selectedAddress._id
-                  })
-                  if(data.success){
-                    toast.success(data.message)
-                    setCartItems({})
-                    navigate('/my-orders')
-                  }
-                  else{
-                    toast.error(data.message)
-                  }
-            }
-            else{
-                  const {data}=await axios.post('/api/order/stripe',{
-                    userId:user._id,
-                    items:cartArray.map(item=>({
-                        product:item._id,
-                        quantity:item.quantity
-                    })),
-                    address:selectedAddress._id
-                  })
-                  if(data.success){
-                    window.location.replace(data.url)
-                  }
-                  else{
-                    toast.error(data.message)
-                  }
-            }
-           
-          } catch (error) {
-              toast.error(error.message)
-          }
+ const placeOrder = async () => {
+  try {
+    if (!user || !user._id) {
+      return toast.error("User not logged in. Please log in first.");
     }
+
+    if (!selectedAddress) {
+      return toast.error("Please select an address");
+    }
+
+    const payload = {
+      userId: user._id,
+      items: cartArray.map((item) => ({
+        product: item._id,
+        quantity: item.quantity,
+      })),
+      address: selectedAddress._id,
+    };
+
+    if (paymentOption === "COD") {
+      const { data } = await axios.post("/api/order/cod", payload);
+      if (data.success) {
+        toast.success(data.message);
+        setCartItems({});
+        navigate("/my-orders");
+      } else {
+        toast.error(data.message);
+      }
+    } else {
+      const { data } = await axios.post("/api/order/stripe", payload);
+      if (data.success) {
+        window.location.replace(data.url);
+      } else {
+        toast.error(data.message);
+      }
+    }
+  } catch (error) {
+    toast.error(error.message);
+  }
+};
+
     useEffect(()=>{
          if(user){
             userAddress()
